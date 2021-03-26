@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+	id 'maven-publish'
+}
+
+version = "1.0.0.A1"
+group = "org.asf.connective.php"
+
+def authorname = "AerialWorks Software Development"
+
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+	maven { name = "AerialWorks"; url = "https://aerialworks.ddns.net/maven" }
+    flatDir {
+       dirs 'libraries'
+    }
+}
+
+jar {
+	manifest {
+		attributes([
+			"Specification-Title": project.name,
+			"Specification-Vendor": "${authorname}",
+			"Specification-Version": project.version,
+			"Implementation-Title": project.name,
+			"Implementation-Version": project.version,
+			"Implementation-Vendor" :"${authorname}",
+			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+		])
+	}
+	includeEmptyDirs = false
+}
+
+dependencies {
+	implementation name: "RatsMemory"
+	implementation name: "ConnectiveHTTP"
+	implementation name: "HttpBasicFileModule"
+	
+	implementation group: 'org.asf.cyan', name: 'CyanComponents', version: '1.0.0.A4'
+	implementation group: 'org.asf.cyan', name: 'CyanUtil', version: '1.0.0.A4'
+	implementation group: 'org.asf.cyan', name: 'CCFG', version: '1.0.0.A7'
+	
+	implementation group: 'javax.activation', name: 'activation', version: '1.1.1'
+	
+	implementation group: 'org.asf.aos.util.service', name: 'aosutil-service-SLIB-UTIL', version: '0.0.0.11'
+}
