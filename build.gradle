@@ -40,12 +40,14 @@ ext.classes = [
 ext.extensionProviders = [
 	"${group}.PhpFileExtensionProvider"
 ]
+ext.postHandlers = [
+	"${group}.PhpFileExtensionProvider"
+]
 
 // We don't need this
 ext.aliasProviders = []
 ext.restrictionProviders = []
 ext.indexPages = []
-ext.postHandlers = []
 ext.lowLevelGetAndPostProcessors = []
 
 

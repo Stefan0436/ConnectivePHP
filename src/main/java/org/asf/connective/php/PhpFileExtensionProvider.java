@@ -23,6 +23,13 @@ public class PhpFileExtensionProvider extends FilePostHandler
 	private String path;
 	private ProviderContext context;
 
+	public PhpFileExtensionProvider() {
+	}
+
+	public PhpFileExtensionProvider(ProviderContext context) {
+		this.context = context;
+	}
+
 	@Override
 	public String fileExtension() {
 		return ".php";
@@ -69,7 +76,7 @@ public class PhpFileExtensionProvider extends FilePostHandler
 
 	@Override
 	protected FilePostHandler newInstance() {
-		return new PhpFileExtensionProvider();
+		return new PhpFileExtensionProvider(context);
 	}
 
 	@Override
@@ -79,8 +86,27 @@ public class PhpFileExtensionProvider extends FilePostHandler
 
 	@Override
 	public void process(String contentType, Socket client) {
-		server = getServer();
-		setResponse(rewrite(getResponse(), getRequest()).getRewrittenResponse());
+		try {
+			server = getServer();
+
+			HashMap<String, String> newHeaders = new HashMap<String, String>(getResponse().headers);
+			InputStream strm = ConnectivePHP.execPHP(path, context, getResponse(), getRequest(), server, newHeaders,
+					getRequest().getBodyStream());
+			getResponse().headers.put("Content-Type", "text/html");
+			if (newHeaders.containsKey("Status")) {
+				String status = newHeaders.get("Status");
+				getResponse().status = Integer.valueOf(status.substring(0, status.indexOf(" ")));
+				getResponse().message = status.substring(status.indexOf(" ") + 1);
+				newHeaders.remove("Status");
+			}
+			getResponse().headers = newHeaders;
+			setBody(strm.readAllBytes());
+		} catch (Exception e) {
+			ConnectivePHP.errorMsg("Exception in PHP generation", e);
+			getResponse().status = 503;
+			getResponse().message = "Internal server error";
+			this.setBody("text/html", server.genError(getResponse(), getRequest()));
+		}
 	}
 
 }

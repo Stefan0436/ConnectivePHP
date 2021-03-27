@@ -67,7 +67,11 @@ context> {
     # We use root, but you can add the instructions to any of your contextfiles
     root> '
     # ...
+
     extension "class:org.asf.connective.php.PhpFileExtensionProvider"
+
+    posthandler "class:org.asf.connective.php.PhpFileExtensionProvider"
+
     # ...
     '
 

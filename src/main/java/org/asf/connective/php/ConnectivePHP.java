@@ -139,12 +139,27 @@ public class ConnectivePHP extends PhpModificationManager {
 		builder.environment().put("SERVER_PORT", Integer.toString(server.getPort()));
 
 		Process proc = builder.start();
-		if (strm != null)
-			strm.transferTo(proc.getOutputStream());
-		proc.getOutputStream().close();
-
-		if (strm != null)
-			strm.close();
+		if (strm != null) {
+			if (request.headers.get("Content-Length") != null) {
+				long length = Long.valueOf(request.headers.get("Content-Length"));
+				int tr = 0;
+				for (long i = 0; i < length; i += tr) {
+					tr = Integer.MAX_VALUE / 1000;
+					if ((length - (long) i) < tr) {
+						tr = strm.available();
+						if (tr == 0) {
+							proc.getOutputStream().write(strm.read());
+							i += 1;
+						}
+						tr = strm.available();
+					}
+					proc.getOutputStream().write(strm.readNBytes(tr));
+				}
+			} else {
+				strm.transferTo(proc.getOutputStream());
+			}
+			proc.getOutputStream().close();
+		}
 
 		while (true) {
 			String line = readStreamLine(proc.getInputStream());
