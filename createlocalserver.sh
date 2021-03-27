@@ -1,5 +1,8 @@
 #!/bin/bash
-git="https://aerialworks.ddns.net/ASF/ConnectiveStandalone.git"
+if [ "$git" == "" ]; then
+    git="https://aerialworks.ddns.net/ASF/ConnectiveStandalone.git"
+fi
+
 dir="$(pwd)"
 
 echo 'Updating standalone installation for testing...'
@@ -25,7 +28,13 @@ function execute() {
         mkdir "$dir/server"
     fi
     cp -rf "build/Installations/." "$dir/server"
-    cp -rf "$dir/server/libs" "$dir/libraries"
+    cp -rf "libraries/"*-javadoc.jar "$dir/server/libs"
+    cp -rf "libraries/"*-sources.jar "$dir/server/libs"
+    
+    if [ ! -d "$dir/libraries" ]; then
+        mkdir "$dir/libraries"
+    fi
+    cp -rf "$dir/server/libs/." "$dir/libraries"
 }
 
 echo Building...

@@ -1,0 +1,37 @@
+# WARNING!
+# At the time of writing, CCFG does not support value overwriting!
+# When a configuration changes programmatically, it will be re-generated entirely, comments will get lost!
+# 
+# Main server configuration file.
+# This is the base configuration used by ConnectiveHTTP.
+
+# HTTP Server Port
+httpPort> 8080
+
+# HTTP Context Configuration
+# Format: context-root> 'contextfile'
+context> {
+    root> '
+    
+    virtualroot "/"
+    extension "class:org.asf.connective.php.PhpFileExtensionProvider"
+    
+    '
+}
+
+# Normal get/post processors, specify module classes here.
+processors> '
+'
+
+# Module configuration, modules should use this map for configuration.
+# Format goes as following:
+# 
+# module> {
+#     (config map)
+# }
+modules> {
+    ConnectivePHP> {
+        server-name> 'ASF Connective'
+        php-binary> '/usr/bin/php-cgi'
+    }
+}
