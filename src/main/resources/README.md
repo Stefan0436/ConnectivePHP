@@ -1,4 +1,4 @@
-# ConnectiveHTTP ${pretty_name}
+# ConnectiveHTTP PHP Module
 ${description}
 
 <br />

@@ -1,4 +1,4 @@
-# ConnectiveHTTP ConnectivePHP Module
+# ConnectiveHTTP PHP Module
 PHP Support for Connective.
 
 <br />
