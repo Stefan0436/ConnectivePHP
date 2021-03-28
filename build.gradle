@@ -24,7 +24,7 @@ ext.moduleClass = "ConnectivePHP"
 ext.authorname = "AerialWorks Software Foundation"
 
 ext.moduletype = "module"
-ext.connectiveversion = "1.0.0.A2"
+ext.connectiveversion = "1.0.0.A3"
 
 ext.license = "LGPL 3.0"
 ext.copyrightsuffix = "Free software, read ${license} license document for more information".toString()
@@ -91,11 +91,11 @@ dependencies {
 	implementation group: 'org.asf.cyan', name: 'CyanComponents', version: '1.0.0.A4'
 	implementation group: 'org.asf.cyan', name: 'CCFG', version: '1.0.0.A8'
 
-	implementation group: 'org.asf.aos.util.service', name: 'aosutil-service-SLIB-UTIL', version: '0.0.0.11'
+	implementation group: 'org.asf.aos.util.service', name: 'aosutil-service-SLIB-UTIL', version: '0.0.0.12'
 }
 
 createEclipseLaunches {
-	name "Launch ConnectiveStandalone Server"
+	name "Launch ConnectiveStandalone Server (${project.name})"
 
 	// Main server
 	mainClass "org.asf.connective.standalone.main.ConnectiveStandalone"

@@ -10,25 +10,18 @@ import org.asf.rats.HttpResponse;
 import org.asf.rats.ConnectiveHTTPServer;
 import org.asf.rats.http.FileContext;
 import org.asf.rats.http.ProviderContext;
-import org.asf.rats.http.providers.FilePostHandler;
+import org.asf.rats.http.providers.FileUploadHandler;
 import org.asf.rats.http.providers.IContextProviderExtension;
 import org.asf.rats.http.providers.IFileExtensionProvider;
 import org.asf.rats.http.providers.IPathProviderExtension;
 import org.asf.rats.http.providers.IServerProviderExtension;
 
-public class PhpFileExtensionProvider extends FilePostHandler
+public class PhpFileExtensionProvider extends FileUploadHandler
 		implements IFileExtensionProvider, IContextProviderExtension, IServerProviderExtension, IPathProviderExtension {
 
 	private ConnectiveHTTPServer server;
 	private String path;
 	private ProviderContext context;
-
-	public PhpFileExtensionProvider() {
-	}
-
-	public PhpFileExtensionProvider(ProviderContext context) {
-		this.context = context;
-	}
 
 	@Override
 	public String fileExtension() {
@@ -40,7 +33,7 @@ public class PhpFileExtensionProvider extends FilePostHandler
 		try {
 			HashMap<String, String> newHeaders = new HashMap<String, String>(input.headers);
 			InputStream strm = ConnectivePHP.execPHP(path, context, input, request, server, newHeaders,
-					request.getBodyStream());
+					request.getRequestBodyStream());
 			if (newHeaders.containsKey("Status")) {
 				String status = newHeaders.get("Status");
 				input.status = Integer.valueOf(status.substring(0, status.indexOf(" ")));
@@ -75,8 +68,8 @@ public class PhpFileExtensionProvider extends FilePostHandler
 	}
 
 	@Override
-	protected FilePostHandler newInstance() {
-		return new PhpFileExtensionProvider(context);
+	protected FileUploadHandler newInstance() {
+		return new PhpFileExtensionProvider();
 	}
 
 	@Override
@@ -85,13 +78,14 @@ public class PhpFileExtensionProvider extends FilePostHandler
 	}
 
 	@Override
-	public void process(String contentType, Socket client) {
+	public boolean process(String contentType, Socket client, String method) {
 		try {
 			server = getServer();
 
 			HashMap<String, String> newHeaders = new HashMap<String, String>(getResponse().headers);
 			InputStream strm = ConnectivePHP.execPHP(path, context, getResponse(), getRequest(), server, newHeaders,
-					getRequest().getBodyStream());
+					getRequest().getRequestBodyStream());
+
 			getResponse().headers.put("Content-Type", "text/html");
 			if (newHeaders.containsKey("Status")) {
 				String status = newHeaders.get("Status");
@@ -99,6 +93,7 @@ public class PhpFileExtensionProvider extends FilePostHandler
 				getResponse().message = status.substring(status.indexOf(" ") + 1);
 				newHeaders.remove("Status");
 			}
+
 			getResponse().headers = newHeaders;
 			setBody(strm.readAllBytes());
 		} catch (Exception e) {
@@ -107,6 +102,8 @@ public class PhpFileExtensionProvider extends FilePostHandler
 			getResponse().message = "Internal server error";
 			this.setBody("text/html", server.genError(getResponse(), getRequest()));
 		}
+		
+		return true;
 	}
 
 }

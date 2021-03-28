@@ -1,5 +1,6 @@
 package org.asf.connective.php;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,6 +75,12 @@ public class ConnectivePHP extends PhpModificationManager {
 	public static InputStream execPHP(String path, ProviderContext context, HttpResponse response, HttpRequest request,
 			ConnectiveHTTPServer server, HashMap<String, String> res, InputStream strm)
 			throws IOException, InterruptedException {
+		
+		if (!new File(context.getSourceDirectory(), path).exists()) {
+			response.status = 404;
+			response.message = "File not found";
+			return new ByteArrayInputStream(server.genError(response, request).getBytes());
+		}
 
 		ProcessBuilder builder = new ProcessBuilder(configuration.get("php-binary"));
 		builder.environment().put("SERVER_NAME", configuration.get("server-name"));

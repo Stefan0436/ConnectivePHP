@@ -9,4 +9,4 @@ bin/
 .project
 
 # Run files
-Launch ConnectiveStandalone Server.launch
+Launch ConnectiveStandalone Server**.launch
