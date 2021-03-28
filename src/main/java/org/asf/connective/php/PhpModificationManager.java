@@ -15,7 +15,6 @@ import org.asf.rats.http.providers.IFileRestrictionProvider;
 import org.asf.rats.processors.HttpGetProcessor;
 import org.asf.rats.processors.HttpUploadProcessor;
 
-// Our superclass for managing modifications made to the server
 public abstract class PhpModificationManager extends CyanComponent {
 
 	private static PhpModificationManager instance;
@@ -46,8 +45,6 @@ public abstract class PhpModificationManager extends CyanComponent {
 
 		prepared = true;
 
-		// Reads the ContextFile that is a part of the module so the modifications can
-		// be applied.
 		InputStream smdf = instance.getClass().getResourceAsStream("/modules." + instance.moduleId() + ".ctxf");
 		String data = new String(smdf.readAllBytes());
 		smdf.close();
