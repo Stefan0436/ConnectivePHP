@@ -14,8 +14,9 @@ context> {
     root> '
     
     virtualroot "/"
-    extension "class:org.asf.connective.php.PhpFileExtensionProvider"
-    uploadhandler "class:org.asf.connective.php.PhpFileExtensionProvider"
+    extension "class:org.asf.connective.php.providers.PhpExtensionProvider"
+    
+    uploadhandler "class:org.asf.connective.php.providers.PhpUploadHandler"
     
     '
 }

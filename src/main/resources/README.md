@@ -54,9 +54,11 @@ ${otherclasses.rats}
 # ...
 ```
 
-$moduleConfigAdditionsStandalone
-
-<br />
+### Module dependencies
+This module depends on the 'CommonCGI' library, it is automatically downloaded on the standalone server, but needs to be installed manually on RaTs!<br/>
+<br/>
+You can get the latest version [here](https://aerialworks.ddns.net/maven/org/asf/connective/commoncgi/CommonCGI/) (select the jarfile that does not end with sources or javadoc)<br/>
+After downloading, drop the jar in the main directory of RaTs!
 
 # Version Notice:
 This module was build targeting ASF Connective version ${connectiveversion},

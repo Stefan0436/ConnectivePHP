@@ -38,10 +38,10 @@ ext.classes = [
 	"${group}.PhpModuleModificationProvider"
 ]
 ext.extensionProviders = [
-	"${group}.PhpFileExtensionProvider"
+	"${group}.providers.PhpExtensionProvider"
 ]
-ext.postHandlers = [
-	"${group}.PhpFileExtensionProvider"
+ext.uploadHandlers = [
+	"${group}.providers.PhpUploadHandler"
 ]
 
 // We don't need this
@@ -62,7 +62,7 @@ repositories {
 	mavenCentral()
 	maven { name = "AerialWorks"; url = "https://aerialworks.ddns.net/maven" }
 	flatDir {
-		dirs 'libraries'
+		dirs 'libraries', 'server'
 	}
 }
 
@@ -87,10 +87,12 @@ dependencies {
 	implementation name: "RatsMemory"
 	implementation name: "ConnectiveHTTP"
 	implementation name: "HttpBasicFileModule"
+	implementation name: "ConnectiveStandalone"
 
 	implementation group: 'org.asf.cyan', name: 'CyanComponents', version: '1.0.0.A4'
 	implementation group: 'org.asf.cyan', name: 'CCFG', version: '1.0.0.A8'
-
+	
+	implementation group: 'org.asf.connective.commoncgi', name: 'CommonCGI', version: '1.0.0.A1'
 	implementation group: 'org.asf.aos.util.service', name: 'aosutil-service-SLIB-UTIL', version: '0.0.0.12'
 }
 
@@ -223,8 +225,8 @@ task genContextFile(dependsOn: processResources) {
         for (String restriction : restrictionProviders) {
             builder.append("restriction \"class:" + restriction + "\"").append(System.lineSeparator());
         }
-        for (String handler : postHandlers) {
-            builder.append("posthandler \"class:" + handler + "\"").append(System.lineSeparator());
+        for (String handler : uploadHandlers) {
+            builder.append("uploadhandler \"class:" + handler + "\"").append(System.lineSeparator());
         }
         for (String processor : lowLevelGetAndPostProcessors) {
             builder.append("processor \"class:" + processor + "\"").append(System.lineSeparator());
@@ -294,7 +296,7 @@ String genAdditions() {
 	boolean isMulti = false
 	for (String provider : extensionProviders) {
 		moduleConfigAdditionsStandalone = checkStandalone(moduleConfigAdditionsStandalone, first)
-		if (first && !multi && (aliasProviders.size() != 0 || restrictionProviders.size() != 0 || indexPages.size() != 0 || postHandlers.size() != 0)) {
+		if (first && !multi && (aliasProviders.size() != 0 || restrictionProviders.size() != 0 || indexPages.size() != 0 || uploadHandlers.size() != 0)) {
 			moduleConfigAdditionsStandalone += System.lineSeparator()
 		}
 
@@ -309,7 +311,7 @@ String genAdditions() {
 	for (String provider : aliasProviders) {
 		moduleConfigAdditionsStandalone = checkStandalone(moduleConfigAdditionsStandalone, first)
 
-		if (first && !multi && (restrictionProviders.size() != 0 || indexPages.size() != 0 || postHandlers.size() != 0)) {
+		if (first && !multi && (restrictionProviders.size() != 0 || indexPages.size() != 0 || uploadHandlers.size() != 0)) {
 			moduleConfigAdditionsStandalone += System.lineSeparator()
 		}
 
@@ -326,7 +328,7 @@ String genAdditions() {
 	for (String provider : restrictionProviders) {
 		moduleConfigAdditionsStandalone = checkStandalone(moduleConfigAdditionsStandalone, first)
 
-		if (first && !multi && (indexPages.size() != 0 || postHandlers.size() != 0)) {
+		if (first && !multi && (indexPages.size() != 0 || uploadHandlers.size() != 0)) {
 			moduleConfigAdditionsStandalone += System.lineSeparator()
 		}
 
@@ -343,7 +345,7 @@ String genAdditions() {
 	for (String provider : indexPages) {
 		moduleConfigAdditionsStandalone = checkStandalone(moduleConfigAdditionsStandalone, first)
 
-		if (first && !multi && (postHandlers.size() != 0)) {
+		if (first && !multi && (uploadHandlers.size() != 0)) {
 			moduleConfigAdditionsStandalone += System.lineSeparator()
 		}
 
@@ -357,7 +359,7 @@ String genAdditions() {
 	}
 
 	first = true
-	for (String provider : postHandlers) {
+	for (String provider : uploadHandlers) {
 		moduleConfigAdditionsStandalone = checkStandalone(moduleConfigAdditionsStandalone, first)
 
 		if (multi)
@@ -366,7 +368,7 @@ String genAdditions() {
 		first = false;
 
 		moduleConfigAdditionsStandalone += System.lineSeparator()
-		moduleConfigAdditionsStandalone += "    posthandler \"class:" + provider + "\""
+		moduleConfigAdditionsStandalone += "    uploadhandler \"class:" + provider + "\""
 	}
 
 	if (!moduleConfigAdditionsStandalone.isEmpty()) {

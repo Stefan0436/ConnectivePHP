@@ -55,36 +55,14 @@ classes> {
 # ...
 ```
 
-## Enabling the modifications on the standalone server
-To enable the modifications, one will need to add the following to their server configuration:
-
-```
-# File: server.ccfg
-# ...
-context> {
-  # ...
-
-    # We use root, but you can add the instructions to any of your contextfiles
-    root> '
-    # ...
-
-    extension "class:org.asf.connective.php.PhpFileExtensionProvider"
-
-    posthandler "class:org.asf.connective.php.PhpFileExtensionProvider"
-
-    # ...
-    '
-
-  # ...
-}
-# ...
-
-```
-
-<br />
+### Module dependencies
+This module depends on the 'CommonCGI' library, it is automatically downloaded on the standalone server, but needs to be installed manually on RaTs!<br/>
+<br/>
+You can get the latest version [here](https://aerialworks.ddns.net/maven/org/asf/connective/commoncgi/CommonCGI/) (select the jarfile that does not end with sources or javadoc)<br/>
+After downloading, drop the jar in the main directory of RaTs!
 
 # Version Notice:
-This module was build targeting ASF Connective version 1.0.0.A2,
+This module was build targeting ASF Connective version 1.0.0.A3,
 it may not work on newer or older versions.
 
 # Copyright Notice:

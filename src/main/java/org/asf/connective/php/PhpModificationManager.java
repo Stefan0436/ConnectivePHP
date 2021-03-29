@@ -82,7 +82,7 @@ public abstract class PhpModificationManager extends CyanComponent {
 						instance.registerAlias((IFileAlias) Class.forName(arguments.get(0).substring("class:".length()),
 								false, instance.getClass().getClassLoader()).getConstructor().newInstance());
 
-					} else if (cmd.equals("posthandler")) {
+					} else if (cmd.equals("uploadhandler")) {
 
 						instance.registerUploadHandler(
 								(FileUploadHandler) Class.forName(arguments.get(0).substring("class:".length()), false,
