@@ -35,6 +35,8 @@ Though it is not too different for each server type.
 ## Installing for the standalone server
 ${install.standalone.desc}
 
+$moduleConfigAdditionsStandalone
+
 ## Installing for ASF RaTs! (Remote Advanced Testing Suite)
 ${install.rats.desc}<br />
 After which, add the following line to the `${install.rats.config.key}` key of the `components.ccfg` file:

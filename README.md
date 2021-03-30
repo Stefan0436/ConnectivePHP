@@ -35,6 +35,32 @@ Though it is not too different for each server type.
 ## Installing for the standalone server
 You can install the module by placing the jar in the `modules` directory of the server.
 
+## Enabling the modifications on the standalone server
+To enable the modifications, one will need to add the following to their server configuration:
+
+```
+# File: server.ccfg
+# ...
+context> {
+  # ...
+
+    # We use root, but you can add the instructions to any of your contextfiles
+    root> '
+    # ...
+
+    extension "class:org.asf.connective.php.providers.PhpExtensionProvider"
+
+    uploadhandler "class:org.asf.connective.php.providers.PhpUploadHandler"
+
+    # ...
+    '
+
+  # ...
+}
+# ...
+
+```
+
 ## Installing for ASF RaTs! (Remote Advanced Testing Suite)
 First, drop the module in the `main` folder of your RaTs! installation.<br />
 After which, add the following line to the `classes` key of the `components.ccfg` file:
