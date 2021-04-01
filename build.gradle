@@ -50,6 +50,26 @@ ext.restrictionProviders = []
 ext.indexPages = []
 ext.lowLevelGetAndPostProcessors = []
 
+apply from: "asf.mvn.publish.gradle"
+
+configurePublish {
+	pretty_name "ConnectiveHTTP ConnectivePHP"
+	description "PHP Module for ConnectiveHTTP."
+	
+	page "https://aerialworks.ddns.net/maven"
+	address "https://aerialworks.ddns.net/maven"
+
+	author {
+		name "$authorname"
+		id "ASF"
+	}
+
+	license {
+		name "GNU Lesser General Public License v3.0"
+		url "https://www.gnu.org/licenses/lgpl-3.0.txt"
+	}
+}
+
 
 apply plugin: 'eclipse'
 apply plugin: 'org.asf.cyan.cornflower'
@@ -467,3 +487,5 @@ String checkStandalone (String moduleConfigAdditionsStandalone, boolean first) {
 	}
 	return moduleConfigAdditionsStandalone;
 }
+
+initializeASFMVNPublish();
