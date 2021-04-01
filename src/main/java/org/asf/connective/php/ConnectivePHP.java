@@ -50,6 +50,7 @@ public class ConnectivePHP extends PhpModificationManager {
 	}
 
 	private void readConfig() {
+		hasConfigChanged = false;
 		ModuleBasedConfiguration<?> config = Memory.getInstance().get("memory.modules.shared.config")
 				.getValue(ModuleBasedConfiguration.class);
 
