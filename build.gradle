@@ -17,7 +17,7 @@ plugins {
 
 
 // Basic information
-version = "1.0.0.A1"
+version = "1.0.0.A2"
 group = "org.asf.connective.php"
 
 ext.moduleClass = "ConnectivePHP"
@@ -127,7 +127,7 @@ createEclipseLaunches {
 	jvm "-DideMode"
 
 	// Make sure the module is loaded into the server
-	jvm "-DaddCpModules=${project.group}.${moduleClass}"
+	jvm "-DaddCpModules=${project.group}.${moduleClass}:org.asf.connective.php.TestComponent"
 
 	// Server dependencies
 	classpath project // current project

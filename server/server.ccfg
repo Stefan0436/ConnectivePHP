@@ -34,6 +34,7 @@ processors> '
 modules> {
     ConnectivePHP> {
         server-name> 'ASF Connective'
+        enable-memcall> 'true'
         php-binary> '/usr/bin/php-cgi'
     }
 }

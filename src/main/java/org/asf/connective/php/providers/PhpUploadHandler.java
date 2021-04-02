@@ -1,7 +1,9 @@
 package org.asf.connective.php.providers;
 
+import java.io.InputStream;
 import java.net.Socket;
 
+import org.asf.connective.commoncgi.CgiScript.CgiContext;
 import org.asf.connective.php.ConnectivePHP;
 import org.asf.rats.HttpRequest;
 import org.asf.rats.http.ProviderContext;
@@ -25,8 +27,18 @@ public class PhpUploadHandler extends FileUploadHandler implements IContextProvi
 	@Override
 	public boolean process(String contentType, Socket client, String method) {
 		try {
-			ConnectivePHP.runPHP(context, getServer(), getRequest(), getResponse(), client, getFolderPath())
-					.applyFullCGI(getResponse());
+			CgiContext ctx = ConnectivePHP.runPHP(context, getServer(), getRequest(), getResponse(), client, getFolderPath());
+			ctx.applyToResponse(getResponse());
+			
+			InputStream oldBody = getResponse().body;
+			InputStream output = ctx.getOutput();
+			output = ConnectivePHP.processMemCall(oldBody, output, getResponse(), getRequest());
+			
+			if (getResponse().body != null) {
+				getResponse().body.close();
+			}
+			
+			getResponse().body = output;
 		} catch (Exception e) {
 			ConnectivePHP.errorMsg("Exception in PHP generation", e);
 			getResponse().status = 503;

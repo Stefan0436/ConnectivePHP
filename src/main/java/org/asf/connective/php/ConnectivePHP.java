@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.asf.connective.commoncgi.CgiScript;
 import org.asf.connective.commoncgi.CgiScript.CgiContext;
@@ -32,6 +35,7 @@ public class ConnectivePHP extends PhpModificationManager {
 	static {
 		configuration.put("php-binary", "/usr/bin/php-cgi");
 		configuration.put("server-name", "ASF Connective");
+		configuration.put("enable-memcall", "true");
 	}
 
 	protected static void initComponent() {
@@ -79,6 +83,10 @@ public class ConnectivePHP extends PhpModificationManager {
 				error("Config saving failed!", e);
 			}
 		}
+	}
+
+	public static boolean isMemCallEnabled() {
+		return configuration.get("enable-memcall").equalsIgnoreCase("true");
 	}
 
 	public static CgiContext runPHP(ProviderContext context, ConnectiveHTTPServer server, HttpRequest request,
@@ -267,4 +275,85 @@ public class ConnectivePHP extends PhpModificationManager {
 		error(string, e);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static InputStream processMemCall(InputStream oldBody, InputStream output, HttpResponse input,
+			HttpRequest request) {
+
+		if (input.getHeader("X-Connective-Memcall").length != 0) {
+			ArrayList<String> calls = new ArrayList<String>();
+			for (String call : input.getHeader("X-Connective-Memcall")) {
+				calls.add(call);
+			}
+			input.headers.forEach((k, v) -> {
+				if (k.startsWith("X-Connective-Memcall-")) {
+					calls.add(v);
+				}
+			});
+
+			for (String header : new ArrayList<String>(input.headers.keySet())) {
+				if (header.equals("X-Connective-Memcall") || header.startsWith("X-Connective-Memcall#")
+						|| header.startsWith("X-Connective-Memcall-")) {
+					input.headers.remove(header);
+				}
+			}
+
+			if (isMemCallEnabled()) {
+				for (String call : calls) {
+					String entry = call;
+					String query = "";
+					if (entry.contains("; ")) {
+						query = entry.substring(entry.indexOf("; ") + 2);
+						entry = entry.substring(0, entry.indexOf("; "));
+					}
+
+					try {
+						try {
+							for (Runnable run : Memory.getInstance().get(entry).getValues(Runnable.class)) {
+								run.run();
+							}
+						} catch (Exception ex) {
+							ConnectivePHP.errorMsg(
+									"Failed to call Runnable: " + ex.getClass().getTypeName() + ": " + ex.getMessage(),
+									ex);
+						}
+						try {
+							for (Consumer<String> con : Memory.getInstance().get(entry).getValues(Consumer.class)) {
+								con.accept(query);
+							}
+						} catch (Exception ex) {
+							ConnectivePHP.errorMsg(
+									"Failed to call Consumer: " + ex.getClass().getTypeName() + ": " + ex.getMessage(),
+									ex);
+						}
+						try {
+							for (BiConsumer<HttpRequest, String> con : Memory.getInstance().get(entry)
+									.getValues(BiConsumer.class)) {
+								con.accept(request, query);
+							}
+						} catch (Exception ex) {
+							ConnectivePHP.errorMsg("Failed to call BiConsumer: " + ex.getClass().getTypeName() + ": "
+									+ ex.getMessage(), ex);
+						}
+						try {
+							input.body = output;
+							for (TriConsumer<HttpRequest, HttpResponse, String> con : Memory.getInstance().get(entry)
+									.getValues(TriConsumer.class)) {
+								con.accept(request, input, query);
+							}
+							if (input.body == output) {
+								input.body = oldBody;
+							} else {
+								output = input.body;
+							}
+						} catch (Exception ex) {
+							ConnectivePHP.errorMsg("Failed to call TriConsumer: " + ex.getClass().getTypeName() + ": "
+									+ ex.getMessage(), ex);
+						}
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
+		return output;
+	}
 }

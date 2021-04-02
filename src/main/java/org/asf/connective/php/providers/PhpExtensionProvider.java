@@ -1,6 +1,7 @@
 package org.asf.connective.php.providers;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.Socket;
 
 import org.asf.connective.commoncgi.CgiScript.CgiContext;
@@ -58,8 +59,13 @@ public class PhpExtensionProvider implements IFileExtensionProvider, IClientSock
 	public FileContext rewrite(HttpResponse input, HttpRequest request) {
 		try {
 			CgiContext ctx = ConnectivePHP.runPHP(context, server, request, input, client, path);
-			ctx.applyToResponse(input);			
-			return FileContext.create(input, "text/html", ctx.getOutput());
+			ctx.applyToResponse(input);
+
+			InputStream oldBody = input.body;
+			InputStream output = ctx.getOutput();
+			output = ConnectivePHP.processMemCall(oldBody, output, input, request);
+			
+			return FileContext.create(input, "text/html", output);
 		} catch (Exception e) {
 			ConnectivePHP.errorMsg("Exception in PHP generation", e);
 
